@@ -19,8 +19,17 @@ def load_cows(filename):
     Returns:
     a dictionary of cow name (string), weight (int) pairs
     """
-    # TODO: Your code here
-    pass
+    # opens the file "filename" and specify read purpose. the "with" keyword promise correct handling of the file,
+    # closing it at the end of use even when an error occurs
+    with open(filename, 'r') as f:
+        cows_dict = {}
+        # reading through the lines in the file
+        for line in f.readlines():
+            # strips each line from a new-line char and splits it to both its components - name and weight
+            cow_info = line.strip('\n').split(',')
+            # building the dictionary
+            cows_dict[cow_info[0]] = cow_info[1]
+    return cows_dict
 
 # Problem 2
 def greedy_cow_transport(cows,limit=10):
@@ -45,7 +54,7 @@ def greedy_cow_transport(cows,limit=10):
     transported on a particular trip and the overall list containing all the
     trips
     """
-    # TODO: Your code here
+
     pass
 
 # Problem 3
@@ -89,3 +98,9 @@ def compare_cow_transport_algorithms():
     """
     # TODO: Your code here
     pass
+
+file_name = "ps1_cow_data.txt"
+print(load_cows(file_name))
+
+file_name = "ps1_cow_data_2.txt"
+print(load_cows(file_name))
