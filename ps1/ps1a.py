@@ -31,8 +31,9 @@ def load_cows(filename):
             cows_dict[cow_info[0]] = cow_info[1]
     return cows_dict
 
+
 # Problem 2
-def greedy_cow_transport(cows,limit=10):
+def greedy_cow_transport(cows, limit=10):
     """
     Uses a greedy heuristic to determine an allocation of cows that attempts to
     minimize the number of spaceship trips needed to transport all the cows. The
@@ -54,8 +55,33 @@ def greedy_cow_transport(cows,limit=10):
     transported on a particular trip and the overall list containing all the
     trips
     """
-
-    pass
+    # initializing the list of trip lists
+    trip_list = []
+    # sorting the dictionary into a list of tuples, sorted by weight - highest first
+    sorted_cows_list = sorted(list(cows.items()), key=lambda cows_tup: cows_tup[1], reverse=True)
+    # eliminating the cows that singly exceed the weight limit for transport
+    sorted_cows_list = [tup for tup in sorted_cows_list if int(tup[1]) <= limit]
+    # while we didnt transported all cows
+    while sorted_cows_list:
+        # initializing a single trip list, the trip current weight, and copying the list for iteration purposes
+        sing_trip = []
+        trip_curr_weight = 0
+        sorted_per_trip = sorted_cows_list.copy()
+        # while the current weight is less than the limit
+        while trip_curr_weight < limit and sorted_per_trip:
+            # pop the info of the heaviest cow and save it
+            heaviest_cow = sorted_per_trip.pop(0)
+            # if the weight of the cow + the current weight on the ship is within limit
+            if int(heaviest_cow[1]) + trip_curr_weight <= limit:
+                # add the cow's name to the trip's list
+                sing_trip.append(heaviest_cow[0])
+                # sum up the weight on this trip
+                trip_curr_weight += int(heaviest_cow[1])
+                # pop the cow from the main cows' list
+                sorted_cows_list.remove(heaviest_cow)
+        if sing_trip:
+            trip_list.append(sing_trip)
+    return trip_list
 
 # Problem 3
 def brute_force_cow_transport(cows,limit=10):
@@ -101,6 +127,7 @@ def compare_cow_transport_algorithms():
 
 file_name = "ps1_cow_data.txt"
 print(load_cows(file_name))
+print(greedy_cow_transport(load_cows(file_name), 10))
 
 file_name = "ps1_cow_data_2.txt"
 print(load_cows(file_name))
