@@ -11,6 +11,7 @@ def partitions(set_):
         for b in partitions(parts[1]):
             yield [parts[0]]+b
 
+
 def get_partitions(set_):
     for partition in partitions(set_):
         yield [list(elt) for elt in partition]
