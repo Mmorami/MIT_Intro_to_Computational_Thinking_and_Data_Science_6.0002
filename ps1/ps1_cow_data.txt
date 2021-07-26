@@ -8,4 +8,3 @@ Millie,5
 Lola,2
 Florence,2
 Henrietta,9
-Dana, 22

@@ -83,8 +83,9 @@ def greedy_cow_transport(cows, limit=10):
             trip_list.append(sing_trip)
     return trip_list
 
+
 # Problem 3
-def brute_force_cow_transport(cows,limit=10):
+def brute_force_cow_transport(cows, limit=10):
     """
     Finds the allocation of cows that minimizes the number of spaceship trips
     via brute force.  The brute force algorithm should follow the following method:
@@ -105,9 +106,28 @@ def brute_force_cow_transport(cows,limit=10):
     transported on a particular trip and the overall list containing all the
     trips
     """
-    # TODO: Your code here
-    pass
-        
+    # saves the best option as the worse option possible (assuming a solution exists)
+    best = [[cow] for cow in cows.keys()]
+    # iterating through the generator that goes through the list of all cows to be transported
+    for sub_set in get_partitions(list(cows.keys())):
+        # approaching to each trip in subset and initialize a sum variable to check if weight exceed
+        for trip in sub_set:
+            w_sum = 0
+            # a loop that sums up the cows' weight and indicates if the weight limit exceeded
+            for cow in trip:
+                w_sum += int(cows[cow])
+                exit = w_sum > limit
+                # if the weight limit exceeded this trip option is not valid solution
+                if exit:
+                    break
+            # if the weight limit exceeded this whole sub set is not a valid solution
+            if exit:
+                break
+        # saves the sub set if the all the trips were within the weight limit and it is better than
+        # the best option on record
+        if not exit and len(sub_set) < len(best):
+            best = sub_set
+    return best
 # Problem 4
 def compare_cow_transport_algorithms():
     """
@@ -122,12 +142,29 @@ def compare_cow_transport_algorithms():
     Returns:
     Does not return anything.
     """
-    # TODO: Your code here
-    pass
+    file_name = "ps1_cow_data.txt"
+    # loads cows to dict
+    cows = load_cows(file_name)
+    # prints the dictionary
+    print(cows)
+    # takes note of the starting time before running the greedy algorithm
+    start = time.time()
+    print(greedy_cow_transport(cows, 10))
+    # takes note of the ending time, after running the greedy algorithm
+    end = time.time()
+    # prints the time took to run the greedy algorithm
+    print("greedy time:", end - start)
 
-file_name = "ps1_cow_data.txt"
-print(load_cows(file_name))
-print(greedy_cow_transport(load_cows(file_name), 10))
+    # takes note of the starting time before running the brute force algorithm
+    start = time.time()
+    print(brute_force_cow_transport(cows, 10))
+    # takes note of the ending time, after running the brute force algorithm
+    end = time.time()
+    # prints the time took to run the brute force algorithm
+    print("brute force time:", end - start)
 
+
+compare_cow_transport_algorithms()
+print('--------------------------------')
 file_name = "ps1_cow_data_2.txt"
 print(load_cows(file_name))
