@@ -128,6 +128,8 @@ def brute_force_cow_transport(cows, limit=10):
         if not exit and len(sub_set) < len(best):
             best = sub_set
     return best
+
+
 # Problem 4
 def compare_cow_transport_algorithms():
     """
