@@ -166,7 +166,8 @@ def compare_cow_transport_algorithms():
     print("brute force time:", end - start)
 
 
-compare_cow_transport_algorithms()
-print('--------------------------------')
-file_name = "ps1_cow_data_2.txt"
-print(load_cows(file_name))
+if __name__ == '__main__':
+    compare_cow_transport_algorithms()
+    print('--------------------------------')
+    file_name = "ps1_cow_data_2.txt"
+    print(load_cows(file_name))
