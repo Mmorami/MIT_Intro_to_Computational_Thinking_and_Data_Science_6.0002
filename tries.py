@@ -20,8 +20,9 @@ def dp_make_weight(egg_weights, target_weight, memo={}):
         if target_weight in egg_weights:
             # save the fastest rout - 1 step
             memo[target_weight] = 1
+        elif target_weight < min(egg_weights):
+            return 0 # can't get any closer to target, stop adding eggs
         else:
-            #
             memo[target_weight] = min(
                 # do the first line for each egg weight in the list
                 1 + dp_make_weight(egg_weights, target_weight - egg_weight, memo)
@@ -38,35 +39,35 @@ if __name__ == '__main__':
     print("Egg weights = (1, 5, 10, 25)")
     print("n = 26")
     print("Expected ouput: 2 (25 + 1 = 26)")
-    # print("Actual output:", dp_make_weight(egg_weights, n))
+    print("Actual output:", dp_make_weight(egg_weights, n))
     print()
 
     n = 99
     print("Egg weights = (1, 5, 10, 25)")
     print("n = 99")
     print("Expected ouput: 9 (3 * 25 + 2 * 10 + 4 * 1 = 99)")
-    # print("Actual output:", dp_make_weight(egg_weights, n))
+    print("Actual output:", dp_make_weight(egg_weights, n))
     print()
 
     n = 100
     print("Egg weights = (1, 5, 10, 25)")
     print("n = 100")
     print("Expected ouput: 4 (4 * 25 = 100)")
-    # print("Actual output:", dp_make_weight(egg_weights, n))
+    print("Actual output:", dp_make_weight(egg_weights, n))
     print()
 
     n = 7
     print("Egg weights = (1, 5, 10, 25)")
     print("n = 7")
     print("Expected ouput: 3 (1 * 5 + 2 * 1 = 100)")
-    # print("Actual output:", dp_make_weight(egg_weights, n))
+    print("Actual output:", dp_make_weight(egg_weights, n))
     print()
 
     n = 101
     print("Egg weights = (1, 5, 10, 25)")
     print("n = 101")
     print("Expected ouput: 5 (4 * 25 + 1 * 1 = 100)")
-    # print("Actual output:", dp_make_weight(egg_weights, n))
+    print("Actual output:", dp_make_weight(egg_weights, n))
     print()
 
     egg_weights = (1, 5, 10, 20)
@@ -74,14 +75,14 @@ if __name__ == '__main__':
     print("Egg weights = ", egg_weights)
     print("n = ", n)
     print("Expected ouput: 10 (4 * 20 + 1 * 10 + 1 * 5 + 4 * 1 = 99)")
-    # print("Actual output:", dp_make_weight(egg_weights, n, {}))
+    print("Actual output:", dp_make_weight(egg_weights, n, {}))
     print()
 
     n = 100
     print("Egg weights = ", egg_weights)
     print("n = ", n)
     print("Expected ouput: 5 (5 * 20 = 100)")
-    # print("Actual output:", dp_make_weight(egg_weights, n, {}))
+    print("Actual output:", dp_make_weight(egg_weights, n, {}))
     print()
 
     egg_weights = (7, 11, 13)
@@ -89,5 +90,13 @@ if __name__ == '__main__':
     print("Egg weights = (7, 11, 13)")
     print("n = 30")
     print("Expected ouput: 3 (2 * 11 + 1 * 7 = 29)")
+    print("Actual output:", dp_make_weight(egg_weights, n))
+    print()
+
+    egg_weights = (2, 5, 10)
+    n = 28
+    print("Egg weights = (2, 5, 10)")
+    print("n = 28")
+    print("Expected ouput: 4 (2 * 10 + 1 * 5 + 1 * 2 = 27)")
     print("Actual output:", dp_make_weight(egg_weights, n))
     print()
