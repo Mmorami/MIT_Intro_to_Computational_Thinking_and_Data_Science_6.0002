@@ -20,8 +20,6 @@ def dp_make_weight(egg_weights, target_weight, memo={}):
         if target_weight in egg_weights:
             # save the fastest rout - 1 step
             memo[target_weight] = 1
-        elif target_weight < min(egg_weights):
-            return 0
         else:
             #
             memo[target_weight] = min(
@@ -86,18 +84,10 @@ if __name__ == '__main__':
     # print("Actual output:", dp_make_weight(egg_weights, n, {}))
     print()
 
-    egg_weights = (1, 6, 14)
-    n = 19
-    print("Egg weights = (1, 6, 14)")
-    print("n = 19")
-    print("Expected ouput: 4 (3 * 6 + 1 * 1 = 19)")
-    print("Actual output:", dp_make_weight(egg_weights, n))
-    print()
-
     egg_weights = (7, 11, 13)
     n = 30
     print("Egg weights = (7, 11, 13)")
     print("n = 30")
     print("Expected ouput: 3 (2 * 11 + 1 * 7 = 29)")
-    # print("Actual output:", dp_make_weight(egg_weights, n))
+    print("Actual output:", dp_make_weight(egg_weights, n))
     print()
