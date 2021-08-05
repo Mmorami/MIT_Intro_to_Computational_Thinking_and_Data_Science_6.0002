@@ -20,8 +20,9 @@ def dp_make_weight(egg_weights, target_weight, memo={}):
         if target_weight in egg_weights:
             # save the fastest rout - 1 step
             memo[target_weight] = 1
+        elif target_weight < min(egg_weights):
+            return 0  # can't get any closer to target, stop adding eggs
         else:
-            #
             memo[target_weight] = min(
                 # do the first line for each egg weight in the list
                 1 + dp_make_weight(egg_weights, target_weight - egg_weight, memo)
