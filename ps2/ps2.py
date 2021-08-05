@@ -1,9 +1,3 @@
-# 6.0002 Problem Set 5
-# Graph optimization
-# Name:
-# Collaborators:
-# Time:
-
 #
 # Finding shortest paths through MIT buildings
 #
@@ -15,11 +9,9 @@ from graph import Digraph, Node, WeightedEdge
 #
 # Problem 2a: Designing your graph
 #
-# What do the graph's nodes represent in this problem? What
-# do the graph's edges represent? Where are the distances
-# represented?
-#
-# Answer:
+# What do the graph's nodes represent *** In this problem? The nodes are buildings
+# What do the graph's edges represent? *** The edges are paths between buildings
+# Where are the distances represented? *** The distances represented as weighted edges between buildings.
 #
 
 
@@ -43,12 +35,33 @@ def load_map(map_filename):
         a Digraph representing the map
     """
 
-    # TODO
+    with open(map_filename, 'r') as f:
+        mit_map = Digraph()
+        nodes = set([])
+        edges = set([])
+        # reading through the lines in the file
+        for line in f.readlines():
+            # strips each line from a new-line char and splits it to its components - source, dest, tot_dist, out_dist
+            edge_info = line.strip('\n').split(' ')
+            # creating Nodes of the source and destinations - more lines of code,
+            # but when breaking down code is easier to follow each line
+            s_node = Node(edge_info[0])
+            d_node = Node(edge_info[1])
+            if not mit_map.has_node(s_node):
+                mit_map.add_node(s_node)
+            if not mit_map.has_node(d_node):
+                mit_map.add_node(d_node)
+            # creating weighted Edge of from the source to the destinations and adds it to the graph
+            e = WeightedEdge(s_node, d_node, edge_info[2], edge_info[3])
+            mit_map.add_edge(e)
     print("Loading map from file...")
+    return mit_map
 
 # Problem 2c: Testing load_map
 # Include the lines used to test load_map below, but comment them out
 
+# g = load_map("test_load_map.txt")
+# print(g)
 
 #
 # Problem 3: Finding the Shorest Path using Optimized Search Method
