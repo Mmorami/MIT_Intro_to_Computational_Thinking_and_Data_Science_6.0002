@@ -34,7 +34,7 @@ def load_map(map_filename):
     Returns:
         a Digraph representing the map
     """
-
+    print("Loading map from file...")
     with open(map_filename, 'r') as f:
         mit_map = Digraph()
         nodes = set([])
@@ -54,8 +54,8 @@ def load_map(map_filename):
             # creating weighted Edge of from the source to the destinations and adds it to the graph
             e = WeightedEdge(s_node, d_node, edge_info[2], edge_info[3])
             mit_map.add_edge(e)
-    print("Loading map from file...")
     return mit_map
+
 
 # Problem 2c: Testing load_map
 # Include the lines used to test load_map below, but comment them out
@@ -70,12 +70,17 @@ def load_map(map_filename):
 #
 # What is the objective function for this problem? What are the constraints?
 #
-# Answer:
+# Answer: The objective function is first and foremost minimizing the total distance walked.
+# The constrain is a maximum distance desired to walk outside.
+# If 2 total distances are equal the one with least amount of outside walk is better.
+# However by assumption, if we can walk 0 distance outside but walk even 1 more step in total this option is inferior.
 #
 
 # Problem 3b: Implement get_best_path
-def get_best_path(digraph, start, end, path, max_dist_outdoors, best_dist,
-                  best_path):
+
+# note that the function is 25-30 lines of code. about 10 of them
+# are assignment of temp variables to avoid long unreadable lines
+def get_best_path(digraph, start, end, path, max_dist_outdoors, best_dist=0, best_path=[]):
     """
     Finds the shortest path between buildings subject to constraints.
 
@@ -108,8 +113,50 @@ def get_best_path(digraph, start, end, path, max_dist_outdoors, best_dist,
         If there exists no path that satisfies max_total_dist and
         max_dist_outdoors constraints, then return None.
     """
-    # TODO
-    pass
+    # if the start and end nodes does not exist in the diagraph raise error
+    if not (digraph.has_node(start) and digraph.has_node(end)):
+        raise ValueError("The starting/ending nodes does not exist")
+
+    # if we reached the end return the best path - either the current path, or the best in memory
+    elif start == end:
+        if path[1] < best_dist or best_dist == 0:
+            return path[0], path[1]
+        else:
+            return best_path, best_dist
+
+    else:
+        if not path[0]:
+            path[0].append(start)
+        # iterating over each edge originated from the start node. edge between 2 nodes is unique
+        edges = digraph.get_edges_for_node(start)
+        for child in edges:
+            # saving the outdoor distance traveled and calculating outdoors dist left
+            curr_dist_out = int(child.get_outdoor_distance())
+            new_max_dist = max_dist_outdoors - curr_dist_out
+            # saving the total distance traveled and calculating new total dist traveled
+            curr_dist_traveled = int(child.get_total_distance())
+            new_tot_dist = path[1] + curr_dist_traveled
+            new_start = child.get_destination()  # setting the new start for next recursive iteration
+            # return None if the constrain is violated OR the total dist walked so far
+            # is exceeding the best distance on record (assuming 0 is the default best which isn't valid answer)
+            # OR the next node has already been visited in the current path (to prevent cycles)
+            if new_max_dist < 0 or new_tot_dist > best_dist != 0 or new_start in path[0]:
+                continue
+            else:
+                # initiating variable to make the code more readable -
+                # fixing the path parameter - adding next node, total distance traveled and dist traveled outside so far
+                path_list = path[0].copy()
+                path_list.append(new_start)
+                new_path = [path_list, new_tot_dist, path[2]+curr_dist_out]
+                # calling the function for another iteration with the new parameters.
+                best_path, best_dist = get_best_path(digraph, new_start, end, new_path, new_max_dist, best_dist, best_path)
+        return best_path, best_dist
+
+
+g = load_map("test_load_map.txt")
+start = Node('a')
+end = Node('c')
+print(get_best_path(g, start, end, [[], 0, 0], 9))
 
 
 # Problem 3c: Implement directed_dfs
@@ -229,5 +276,6 @@ class Ps2Test(unittest.TestCase):
         self._test_impossible_path('10', '32', total_dist=100)
 
 
-if __name__ == "__main__":
-    unittest.main()
+# if __name__ == "__main__":
+#     unittest.main()
+
