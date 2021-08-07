@@ -113,8 +113,11 @@ def get_best_path(digraph, start, end, path, max_dist_outdoors, best_dist=None, 
         If there exists no path that satisfies max_total_dist and
         max_dist_outdoors constraints, then return None.
     """
+    #
+    start_node = Node(start)
+    end_node = Node(end)
     # if the start and end nodes does not exist in the diagraph raise error
-    if not (digraph.has_node(start) and digraph.has_node(end)):
+    if not (digraph.has_node(start_node) and digraph.has_node(end_node)):
         raise ValueError("The starting/ending nodes does not exist")
 
     # if we reached the end return the best path - either the current path, or the best in memory
@@ -128,7 +131,7 @@ def get_best_path(digraph, start, end, path, max_dist_outdoors, best_dist=None, 
         if not path[0]:
             path[0].append(start)
         # iterating over each edge originated from the start node. edge between 2 nodes is unique
-        edges = digraph.get_edges_for_node(start)
+        edges = digraph.get_edges_for_node(start_node)
         for child in edges:
             # saving the outdoor distance traveled and calculating outdoors dist left
             curr_dist_out = int(child.get_outdoor_distance())
@@ -136,7 +139,7 @@ def get_best_path(digraph, start, end, path, max_dist_outdoors, best_dist=None, 
             # saving the total distance traveled and calculating new total dist traveled
             curr_dist_traveled = int(child.get_total_distance())
             new_tot_dist = path[1] + curr_dist_traveled
-            new_start = child.get_destination()  # setting the new start for next recursive iteration
+            new_start = child.get_destination().get_name()  # setting the new start for next recursive iteration
             # return None if the constrain is violated OR the total dist walked so far
             # is exceeding the best distance on record (assuming None=0 is the default best which isn't valid answer)
             # OR the next node has already been visited in the current path (to prevent cycles)
@@ -154,10 +157,10 @@ def get_best_path(digraph, start, end, path, max_dist_outdoors, best_dist=None, 
         return best_path, best_dist
 
 
-g = load_map("test_load_map.txt")
-start = Node('a')
-end = Node('c')
-print(get_best_path(g, start, end, [[], 0, 0], 9))
+# g = load_map("test_load_map.txt")
+# start = 'a'
+# end = 'c'
+# print(get_best_path(g, start, end, [[], 0, 0], 10))
 
 
 # Problem 3c: Implement directed_dfs
