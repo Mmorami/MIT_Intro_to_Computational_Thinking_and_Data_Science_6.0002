@@ -80,7 +80,7 @@ def load_map(map_filename):
 
 # note that the function is 25-30 lines of code. about 10 of them
 # are assignment of temp variables to avoid long unreadable lines
-def get_best_path(digraph, start, end, path, max_dist_outdoors, best_dist=0, best_path=[]):
+def get_best_path(digraph, start, end, path, max_dist_outdoors, best_dist=None, best_path=None):
     """
     Finds the shortest path between buildings subject to constraints.
 
@@ -119,7 +119,7 @@ def get_best_path(digraph, start, end, path, max_dist_outdoors, best_dist=0, bes
 
     # if we reached the end return the best path - either the current path, or the best in memory
     elif start == end:
-        if path[1] < best_dist or best_dist == 0:
+        if path[1] < int(0 if best_dist is None else best_dist) or best_dist is None:
             return path[0], path[1]
         else:
             return best_path, best_dist
@@ -138,9 +138,10 @@ def get_best_path(digraph, start, end, path, max_dist_outdoors, best_dist=0, bes
             new_tot_dist = path[1] + curr_dist_traveled
             new_start = child.get_destination()  # setting the new start for next recursive iteration
             # return None if the constrain is violated OR the total dist walked so far
-            # is exceeding the best distance on record (assuming 0 is the default best which isn't valid answer)
+            # is exceeding the best distance on record (assuming None=0 is the default best which isn't valid answer)
             # OR the next node has already been visited in the current path (to prevent cycles)
-            if new_max_dist < 0 or new_tot_dist > best_dist != 0 or new_start in path[0]:
+            if new_max_dist < 0 or (new_tot_dist > int(0 if best_dist is None else best_dist) and
+                                    best_dist is not None) or new_start in path[0]:
                 continue
             else:
                 # initiating variable to make the code more readable -
