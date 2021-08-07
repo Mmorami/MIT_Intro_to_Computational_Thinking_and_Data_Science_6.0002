@@ -34,7 +34,7 @@ def load_map(map_filename):
     Returns:
         a Digraph representing the map
     """
-    print("Loading map from file...")
+    # print("Loading map from file...")
     with open(map_filename, 'r') as f:
         mit_map = Digraph()
         nodes = set([])
@@ -113,7 +113,6 @@ def get_best_path(digraph, start, end, path, max_dist_outdoors, best_dist=None, 
         If there exists no path that satisfies max_total_dist and
         max_dist_outdoors constraints, then return None.
     """
-    #
     start_node = Node(start)
     end_node = Node(end)
     # if the start and end nodes does not exist in the diagraph raise error
@@ -192,8 +191,10 @@ def directed_dfs(digraph, start, end, max_total_dist, max_dist_outdoors):
         If there exists no path that satisfies max_total_dist and
         max_dist_outdoors constraints, then raises a ValueError.
     """
-    # TODO
-    pass
+    best_path, best_dist = get_best_path(digraph, start, end, [[], 0, 0], max_dist_outdoors, max_total_dist)
+    if (best_dist and best_path) is None:
+        raise ValueError("No path found")
+    return best_path
 
 
 # ================================================================
@@ -280,6 +281,6 @@ class Ps2Test(unittest.TestCase):
         self._test_impossible_path('10', '32', total_dist=100)
 
 
-# if __name__ == "__main__":
-#     unittest.main()
+if __name__ == "__main__":
+    unittest.main()
 
