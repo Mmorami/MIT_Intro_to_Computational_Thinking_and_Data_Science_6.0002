@@ -11,6 +11,7 @@ import imp
 test = imp.load_compiled("test", "test.pyc")
 import ps3
 
+
 def xyrange(x_upper_bound, y_upper_bound):
     """ Returns the cartesian product of range(x_upper_bound) and range(y_upper_bound).
         Useful for iterating over the tuple coordinates of a room
@@ -25,7 +26,7 @@ class ps3_P1A(unittest.TestCase):
         """Test if student implemented methods in RectangularRoom abstract class that should not be implemented"""
         room = ps3.RectangularRoom(2,2,1)
         self.assertRaises(NotImplementedError, room.get_num_tiles)
-        pos = test.Position(1,1)
+        pos = test.Position(1, 1)
         self.assertRaises(NotImplementedError, room.is_position_valid, pos)
         self.assertRaises(NotImplementedError, room.get_random_position)
 
