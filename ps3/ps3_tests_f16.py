@@ -6,9 +6,10 @@ import threading
 import traceback
 import unittest
 import random
-import imp
+# import imp
+import test
 
-test = imp.load_compiled("test", "test.pyc")
+# test = imp.load_compiled("test", "test.pyc")
 import ps3
 
 
@@ -583,6 +584,7 @@ class ps3_P5_Faulty(SimulationTester):
         "Test cleaning 90% of a 10x10 room with FaultyRobot"
         x = ps3.run_simulation(5, 1.0, 3, 10, 10, 10, 0.9, 100, ps3.FaultyRobot)
         self.assertTrue(205 <= x <=225, "Simulation output was outside of 99.7% confidence interval! Took " + str(x) + " steps\n")
+
 
 if __name__ == "__main__":
     suite = unittest.TestSuite()
