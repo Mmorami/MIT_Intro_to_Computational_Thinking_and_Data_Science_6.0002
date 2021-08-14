@@ -487,12 +487,22 @@ def run_simulation(num_robots, speed, capacity, width, height, dirt_amount, min_
 # 1)How does the performance of the two robot types compare when cleaning 80%
 #       of a 20x20 room?
 #
+# A:  The standard robot clean the same room in ~80-85% of the time it takes for the faulty robot.
+#   it makes sense as we set the faulty robot to 15% fault. while the change of direction shouldn't affect the cleaning
+#   time (as the movement is random and the change of direction may improve performance in some cases), what does affect
+#   is the fact that malfunction is count as a step and does not attempt cleaning any tile.
 #
 # 2) How does the performance of the two robot types compare when two of each
 #       robot cleans 80% of rooms with dimensions 
 #       10x30, 20x15, 25x12, and 50x6?
 #
-#
+# A: Both robots are correlated in their behaviour - the more square shape the room, the faster it is cleaned.
+#    This behaviour make sense because in square rooms the robot is less likely to be around edges, hence when choosing
+#    a random advancement direction it is less likely to "hit the edges" and therefore wasting a step not cleaning.
+#    We can also see that the faulty robot is diverging in cleaning time faster than the standard robot.
+#    That is happening for the same reason - the random direction is very likely to direct towards an edge
+#    in rectangular rooms, and therefore not only that a fault may increase a step with 15% chance, but each malfunction
+#    result a choice of a new direction which is very likely to direct the robot to an edge which invoke another step.
 
 def show_plot_compare_strategies(title, x_label, y_label):
     """
@@ -523,7 +533,7 @@ def show_plot_room_shape(title, x_label, y_label):
     times1 = []
     times2 = []
     for width in [10, 20, 25, 50]:
-        height = 300 / width
+        height = int(300 / width)
         print("Plotting cleaning time for a room of width:", width, "by height:", height)
         aspect_ratios.append(float(width) / height)
         times1.append(run_simulation(2, 1.0, 1, width, height, 3, 0.8, 200, StandardRobot))
@@ -538,14 +548,4 @@ def show_plot_room_shape(title, x_label, y_label):
 
 
 # show_plot_compare_strategies('Time to clean 80% of a 20x20 room, for various numbers of robots','Number of robots','Time / steps')
-# show_plot_room_shape('Time to clean 80% of a 300-tile room for various room shapes','Aspect Ratio', 'Time / steps')
-
-r = RectangularRoom(3, 4, 5)
-r.clean_tile_at_position(Position(1.1, 2.5), 5)
-print(r.get_num_cleaned_tiles())
-print(r.is_tile_cleaned(1, 2))
-print(r.get_dirt_amount(1, 2))
-
-# # r = FurnishedRoom(3, 4, 5)
-# # r.add_furniture_to_room()
-# r.get_random_position()
+show_plot_room_shape('Time to clean 80% of a 300-tile room for various room shapes','Aspect Ratio', 'Time / steps')
