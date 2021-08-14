@@ -194,6 +194,7 @@ class Robot(object):
         capacity: a positive interger; the amount of dirt cleaned by the robot 
                   in a single time-step
         """
+        self.room = room
         self.speed = speed
         self.capacity = capacity
         self.position = room.get_random_position()
@@ -366,7 +367,15 @@ class StandardRobot(Robot):
         rotate once to a random new direction, and stay stationary) and clean the dirt on the tile
         by its given capacity. 
         """
-        raise NotImplementedError
+        # compute the new position with current speed and direction, and save it.
+        new_pos = self.get_robot_position().get_new_position(self.get_robot_direction(), self.speed)
+        # if the room position is valid set the current position to the new one and clean the at new position
+        if self.room.is_position_valid(new_pos):
+            self.set_robot_position(new_pos)
+            self.room.clean_tile_at_position(self.get_robot_position(), self.capacity)
+        # otherwise rotate the robot to a random direction and dont move
+        else:
+            self.set_robot_direction(random.random()*360)
 
 
 # Uncomment this line to see your implementation of StandardRobot in action!
