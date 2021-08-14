@@ -12,7 +12,7 @@ import pylab
 # For python 2.7:
 from ps3_verify_movement27 import test_robot_movement
 
-
+random.seed(0)
 # === Provided class Position
 class Position(object):
     """
@@ -420,7 +420,19 @@ class FaultyRobot(Robot):
         StandardRobot at this time-step (checking if it can move to a new position,
         move there if it can, pick a new direction and stay stationary if it can't)
         """
-        raise NotImplementedError
+        new_dir = random.random()*360
+        if self.gets_faulty():
+            self.set_robot_direction(new_dir)
+        else:
+            # compute the new position with current speed and direction, and save it.
+            new_pos = self.get_robot_position().get_new_position(self.get_robot_direction(), self.speed)
+            # if the room position is valid set the current position to the new one and clean the at new position
+            if self.room.is_position_valid(new_pos):
+                self.set_robot_position(new_pos)
+                self.room.clean_tile_at_position(self.get_robot_position(), self.capacity)
+            # otherwise rotate the robot to a random direction and dont move
+            else:
+                self.set_robot_direction(new_dir)
 
 
 # test_robot_movement(FaultyRobot, EmptyRoom)
