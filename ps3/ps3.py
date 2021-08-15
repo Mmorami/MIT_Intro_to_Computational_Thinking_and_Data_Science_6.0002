@@ -461,6 +461,7 @@ def run_simulation(num_robots, speed, capacity, width, height, dirt_amount, min_
     """
     trial_result = []
     for i in range(num_trials):
+        # anim = ps3_visualize.RobotVisualization(num_robots, width, height, False, delay=0.02)
         robot_list = []
         steps = 0
         room = EmptyRoom(width, height, dirt_amount)
@@ -469,8 +470,10 @@ def run_simulation(num_robots, speed, capacity, width, height, dirt_amount, min_
         while room.get_num_cleaned_tiles()/room.get_num_tiles() < min_coverage:
             for robot in robot_list:
                 robot.update_position_and_clean()
+            # anim.update(room, robot_list)
             steps += 1
         trial_result.append(steps)
+        # anim.done()
     return numpy.mean(trial_result)
 
 
