@@ -180,7 +180,7 @@ class Patient(object):
         for bacterium in self.bacteria:
             try:
                 new_bacteria.append(bacterium.reproduce(curr_pop))
-                # updating population on the run
+                # updating population density on the run
                 curr_pop = ((curr_pop * self.max_pop) + 1) / self.max_pop
             except:
                 pass
@@ -204,7 +204,10 @@ def calc_pop_avg(populations, n):
     Returns:
         float: The average bacteria population size at time step n
     """
-    pass  # TODO
+    tot = 0
+    for trial in populations:
+        tot += trial[n]
+    return tot/len(populations)
 
 
 def simulation_without_antibiotic(num_bacteria, max_pop, birth_prob, death_prob, num_trials):
@@ -236,8 +239,27 @@ def simulation_without_antibiotic(num_bacteria, max_pop, birth_prob, death_prob,
         populations (list of lists or 2D array): populations[i][j] is the
             number of bacteria in trial i at time step j
     """
-    pass  # TODO
+    populations = []
+    for trial in range(num_trials):
+        # instantiating a list of SimpleBacteria for a specific trial
+        bacteria_list = []
+        for j in range(num_bacteria):
+            bacteria_list.append(SimpleBacteria(birth_prob, death_prob))
+        # instantiating a patient for a specific trial
+        patient = Patient(bacteria_list, max_pop)
+        # initiating a list of the population of this specific trial with the initial values already appended
+        trial_bacteria_pop = [patient.get_total_pop()]
+        # updating the patient 299 times (total of 300 with the initial value) and make sure to keep track of the pop
+        for n in range(299):
+            patient.update()
+            trial_bacteria_pop.append(patient.get_total_pop())
+        populations.append(trial_bacteria_pop)
 
+    avg_pop_per_timestep = []
+    for step in range(300):
+        avg_pop_per_timestep.append(calc_pop_avg(populations, step))
+    make_one_curve_plot(range(300), avg_pop_per_timestep, "Timestep", "Average Population", "Without Antibiotics")
+    return populations
 
 # When you are ready to run the simulation, uncomment the next line
 # populations = simulation_without_antibiotic(100, 1000, 0.1, 0.025, 50)
@@ -482,8 +504,18 @@ if __name__ == '__main__':
     # total_pop, resistant_pop = simulation_with_antibiotic(num_bacteria=100, max_pop=1000, birth_prob=0.3, death_prob=0.2,resistant=False, mut_prob=0.8, num_trials=50)
 
     # total_pop, resistant_pop = simulation_with_antibiotic(num_bacteria=100, max_pop=1000, birth_prob=0.17, death_prob=0.2, resistant=False, mut_prob=0.8, num_trials=50)
-    bac = []
-    for i in range(5):
-        bac.append(SimpleBacteria(0.5, 0.01))
-    a = Patient(bac, 1000)
-    print(a.update())
+
+    # ==================
+    # test for problem 1
+    # ==================
+
+    # bac = []
+    # for i in range(5):
+    #     bac.append(SimpleBacteria(0.5, 0.01))
+    # a = Patient(bac, 1000)
+    # print(a.update())
+
+    # ==================
+    # test for problem 2
+    # ==================
+    pop = simulation_without_antibiotic(5, 100, 0.3, 0.2, 100)
