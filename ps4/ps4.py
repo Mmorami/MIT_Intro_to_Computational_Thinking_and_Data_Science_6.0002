@@ -518,4 +518,4 @@ if __name__ == '__main__':
     # ==================
     # test for problem 2
     # ==================
-    pop = simulation_without_antibiotic(5, 100, 0.3, 0.2, 100)
+    # pop = simulation_without_antibiotic(5, 100, 0.3, 0.2, 100)
