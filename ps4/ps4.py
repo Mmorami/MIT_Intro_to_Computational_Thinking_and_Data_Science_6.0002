@@ -268,6 +268,7 @@ def simulation_without_antibiotic(num_bacteria, max_pop, birth_prob, death_prob,
 # PROBLEM 3
 ##########################
 
+
 def calc_pop_std(populations, t):
     """
     Finds the standard deviation of populations across different trials
@@ -289,7 +290,15 @@ def calc_pop_std(populations, t):
         float: the standard deviation of populations across different trials at
              a specific time step
     """
-    pass  # TODO
+    # using the function from problem 2 to calculate the average pop
+    avg_pop = calc_pop_avg(populations, t)
+    square_dist_from_mean_SUM = 0
+    # for each trial calc the square distance from avg and sum it up
+    for trial in populations:
+        square_dist_from_mean_SUM += (trial[t] - avg_pop) ** 2
+    # calculate std according to formula - len(population) is the number of data points n.
+    std_pop = math.sqrt(1/len(populations) * square_dist_from_mean_SUM)
+    return std_pop
 
 
 def calc_95_ci(populations, t):
@@ -313,7 +322,11 @@ def calc_95_ci(populations, t):
 
         I.e., you should return a tuple containing (mean, width)
     """
-    pass  # TODO
+    avg_pop = calc_pop_avg(populations, t)
+    std_pop = calc_pop_std(populations, t)
+    SEM = std_pop/math.sqrt(len(populations))
+    CI = 1.96 * SEM
+    return avg_pop, CI
 
 
 ##########################
@@ -518,4 +531,10 @@ if __name__ == '__main__':
     # ==================
     # test for problem 2
     # ==================
-    # pop = simulation_without_antibiotic(5, 100, 0.3, 0.2, 100)
+    pop = simulation_without_antibiotic(5, 100, 0.3, 0.2, 100)
+
+    # ==================
+    # test for problem 3
+    # ==================
+    avg, CI = calc_95_ci(pop, 298)
+    print(avg, CI)
