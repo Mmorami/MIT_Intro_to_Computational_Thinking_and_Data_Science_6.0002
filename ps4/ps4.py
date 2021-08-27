@@ -50,7 +50,7 @@ def make_two_curve_plot(x_coords, y_coords1, y_coords2, y_name1, y_name2, x_labe
     """
     pl.figure()
     pl.plot(x_coords, y_coords1, label=y_name1)
-    pl.plot(x_coords, y_coords2, label=y_name2)
+    pl.plot(x_coords, y_coords2, '--', label=y_name2)
     pl.legend()
     pl.xlabel(x_label)
     pl.ylabel(y_label)
@@ -445,8 +445,7 @@ class TreatedPatient(Patient):
         Returns:
             int: the number of bacteria with antibiotic resistance
         """
-        return sum(map(ResistantBacteria.get_resistant(), self.bacteria))
-        # return sum(map(lambda bacterium: bacterium.get_resistant(), self.bacteria))
+        return sum(map(lambda bacterium: bacterium.get_resistant(), self.bacteria))
         # return len([0 for bacterium in self.bacteria if bacterium.get_resistant()])
 
     def update(self):
@@ -478,7 +477,7 @@ class TreatedPatient(Patient):
         new_bacteria = [bacterium for bacterium in self.bacteria if not bacterium.is_killed()]
 
         # step 2 - keeping bacteria according to patient's treatment.
-        if self.on_antibiotic():
+        if self.on_antibiotic:
             new_bacteria = [bacterium for bacterium in new_bacteria if bacterium.get_resistant()]
         self.bacteria = new_bacteria.copy()
 
@@ -539,17 +538,48 @@ def simulation_with_antibiotic(num_bacteria, max_pop, birth_prob, death_prob, re
             resistant_pop[i][j] is the number of resistant bacteria for
             trial i at time step j
     """
-    pass  # TODO
+    tot_populations = []
+    res_populations = []
+    for trial in range(num_trials):
+        # instantiating a list of ResistantBacteria for a specific trial
+        bacteria_list = [ResistantBacteria(birth_prob, death_prob, resistant, mut_prob) for j in range(num_bacteria)]
+        # instantiating a patient for a specific trial
+        patient = TreatedPatient(bacteria_list, max_pop)
+
+        # initiating a list of the population of this specific trial with the initial values already appended
+        trial_tot_pop = [patient.get_total_pop()]
+        trial_res_pop = [patient.get_resist_pop()]
+        # updating the patient 149 times (total of 150 with the initial value) and make sure to keep track of the pop
+        for n in range(149):
+            patient.update()
+            trial_tot_pop.append(patient.get_total_pop())
+            trial_res_pop.append(patient.get_resist_pop())
+
+        # changing the patient to be treated with antibiotics,
+        # then updating the patient 250 more times while keeping track of the pop
+        patient.set_on_antibiotic()
+        for n in range(250):
+            patient.update()
+            trial_tot_pop.append(patient.get_total_pop())
+            trial_res_pop.append(patient.get_resist_pop())
+
+        # creating a list of lists. the outer list is a container for the inner lists which are specific trials
+        tot_populations.append(trial_tot_pop)
+        res_populations.append(trial_res_pop)
+
+    # printing graphs
+    avg_total_pop_per_timestep = []
+    avg_res_pop_per_timestep = []
+    for step in range(400):
+        avg_total_pop_per_timestep.append(calc_pop_avg(tot_populations, step))
+        avg_res_pop_per_timestep.append(calc_pop_avg(res_populations, step))
+    make_two_curve_plot(range(400), avg_total_pop_per_timestep, avg_res_pop_per_timestep, "Total", "Resistant",
+                        "Timestep", "Average Population", "With Antibiotics")
+
+    return tot_populations, res_populations
 
 
 if __name__ == '__main__':
-    pass  # TODO
-    # When you are ready to run the simulations, uncomment the next lines one
-    # at a time
-    # total_pop, resistant_pop = simulation_with_antibiotic(num_bacteria=100, max_pop=1000, birth_prob=0.3, death_prob=0.2,resistant=False, mut_prob=0.8, num_trials=50)
-
-    # total_pop, resistant_pop = simulation_with_antibiotic(num_bacteria=100, max_pop=1000, birth_prob=0.17, death_prob=0.2, resistant=False, mut_prob=0.8, num_trials=50)
-
     # ==================
     # test for problem 1
     # ==================
@@ -563,10 +593,23 @@ if __name__ == '__main__':
     # ==================
     # test for problem 2
     # ==================
-    pop = simulation_without_antibiotic(5, 100, 0.3, 0.2, 100)
+    # pop = simulation_without_antibiotic(5, 100, 0.3, 0.2, 100)
 
     # ==================
     # test for problem 3
     # ==================
-    avg, CI = calc_95_ci(pop, 298)
-    print(avg, CI)
+    # avg, CI = calc_95_ci(pop, 298)
+    # print(avg, CI)
+
+    # ==================
+    # test for problem 5
+    # ==================
+    # When you are ready to run the simulations, uncomment the next lines one
+    # at a time
+    total_pop, resistant_pop = simulation_with_antibiotic(num_bacteria=100, max_pop=1000, birth_prob=0.3, death_prob=0.2,resistant=False, mut_prob=0.8, num_trials=50)
+    print(calc_95_ci(total_pop, 299))
+    print(calc_95_ci(resistant_pop, 299))
+
+    total_pop, resistant_pop = simulation_with_antibiotic(num_bacteria=100, max_pop=1000, birth_prob=0.17, death_prob=0.2, resistant=False, mut_prob=0.8, num_trials=50)
+    print(calc_95_ci(total_pop, 299))
+    print(calc_95_ci(resistant_pop, 299))
