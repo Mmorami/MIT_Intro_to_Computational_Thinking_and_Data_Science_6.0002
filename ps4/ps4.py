@@ -180,8 +180,6 @@ class Patient(object):
         for bacterium in self.bacteria:
             try:
                 new_bacteria.append(bacterium.reproduce(curr_pop))
-                # updating population density on the run
-                curr_pop = ((curr_pop * self.max_pop) + 1) / self.max_pop
             except:
                 pass
         self.bacteria = new_bacteria
@@ -346,11 +344,13 @@ class ResistantBacteria(SimpleBacteria):
                 bacteria cell. This is the maximum probability of the
                 offspring acquiring antibiotic resistance
         """
-        pass  # TODO
+        SimpleBacteria.__init__(self, birth_prob, death_prob)
+        self.resistant = resistant
+        self.mut_prob = mut_prob
 
     def get_resistant(self):
         """Returns whether the bacteria has antibiotic resistance"""
-        pass  # TODO
+        return self.resistant
 
     def is_killed(self):
         """Stochastically determines whether this bacteria cell is killed in
@@ -364,7 +364,9 @@ class ResistantBacteria(SimpleBacteria):
             bool: True if the bacteria dies with the appropriate probability
                 and False otherwise.
         """
-        pass  # TODO
+        if self.get_resistant():
+            return random.random() < self.death_prob
+        return random.random() < self.death_prob/4
 
     def reproduce(self, pop_density):
         """
@@ -395,7 +397,14 @@ class ResistantBacteria(SimpleBacteria):
             as this bacteria. Otherwise, raises a NoChildException if this
             bacteria cell does not reproduce.
         """
-        pass  # TODO
+        if random.random() < self.birth_prob * (1 - pop_density):
+            if self.get_resistant():
+                off_spring = ResistantBacteria(self.birth_prob, self.death_prob, self.resistant, self.mut_prob)
+            else:
+                resistant = random.random() < self.mut_prob * (1 - pop_density)
+                off_spring = ResistantBacteria(self.birth_prob, self.death_prob, resistant, self.mut_prob)
+            return off_spring
+        raise NoChildException
 
 
 class TreatedPatient(Patient):
@@ -419,14 +428,15 @@ class TreatedPatient(Patient):
         Don't forget to call Patient's __init__ method at the start of this
         method.
         """
-        pass  # TODO
+        Patient.__init__(self, bacteria, max_pop)
+        self.on_antibiotic = False
 
     def set_on_antibiotic(self):
         """
         Administer an antibiotic to this patient. The antibiotic acts on the
         bacteria population for all subsequent time steps.
         """
-        pass  # TODO
+        self.on_antibiotic = True
 
     def get_resist_pop(self):
         """
@@ -435,7 +445,9 @@ class TreatedPatient(Patient):
         Returns:
             int: the number of bacteria with antibiotic resistance
         """
-        pass  # TODO
+        return sum(map(ResistantBacteria.get_resistant(), self.bacteria))
+        # return sum(map(lambda bacterium: bacterium.get_resistant(), self.bacteria))
+        # return len([0 for bacterium in self.bacteria if bacterium.get_resistant()])
 
     def update(self):
         """
@@ -462,7 +474,27 @@ class TreatedPatient(Patient):
         Returns:
             int: The total bacteria population at the end of the update
         """
-        pass  # TODO
+        # step 1 - checking keeping only the bacteria that doesnt die stochastically.
+        new_bacteria = [bacterium for bacterium in self.bacteria if not bacterium.is_killed()]
+
+        # step 2 - keeping bacteria according to patient's treatment.
+        if self.on_antibiotic():
+            new_bacteria = [bacterium for bacterium in new_bacteria if bacterium.get_resistant()]
+        self.bacteria = new_bacteria.copy()
+
+        # step 3 - calc the current pop density
+        curr_pop = self.get_total_pop() / self.max_pop
+
+        # step 4 & 5 - reproduction and appending the new offsprings to the class' attribute.
+        # works 'cause self.bacteria have the same value as new_bacteria at this point
+
+        for bacterium in new_bacteria:
+            try:
+                self.bacteria.append(bacterium.reproduce(curr_pop))
+            except:
+                pass
+
+        return len(self.bacteria)
 
 
 ##########################
