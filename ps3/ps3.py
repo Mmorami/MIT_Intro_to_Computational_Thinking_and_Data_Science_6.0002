@@ -438,8 +438,7 @@ class FaultyRobot(Robot):
 # test_robot_movement(FaultyRobot, EmptyRoom)
 
 # === Problem 5
-def run_simulation(num_robots, speed, capacity, width, height, dirt_amount, min_coverage, num_trials,
-                   robot_type):
+def run_simulation(num_robots, speed, capacity, width, height, dirt_amount, min_coverage, num_trials, robot_type):
     """
     Runs num_trials trials of the simulation and returns the mean number of
     time-steps needed to clean the fraction min_coverage of the room.
